@@ -1,11 +1,11 @@
-# Medtools65
+# Medex65
 
-Repository monorepo pour l’application Medtools65 avec un backend Laravel et un frontend React.
+Repository monorepo pour l’application Medex65 avec un backend Laravel et un frontend React.
 
 ## Architecture
 
-- `medtools65-api/` : backend API REST Laravel 11
-- `medtools65-react/` : frontend React/Vite
+- `medex65-api/` : backend API REST Laravel 11
+- `medex65-react/` : frontend React/Vite
 
 ## Installation globale
 
@@ -14,7 +14,7 @@ Ce dépôt contient deux projets distincts. Installe d'abord les dépendances po
 ### Backend Laravel
 
 ```bash
-cd medtools65-api
+cd medex65-api
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -28,7 +28,7 @@ php artisan serve --port=8000
 ### Frontend React
 
 ```bash
-cd medtools65-react
+cd medex65-react
 npm install
 cp .env.example .env.local
 npm run dev
@@ -36,7 +36,7 @@ npm run dev
 
 ## Organisation des répertoires
 
-### `medtools65-api`
+### `medex65-api`
 
 - `app/` : logique applicative, modèles, contrôleurs, ressources
 - `bootstrap/`, `config/`, `database/` : configuration Laravel
@@ -45,7 +45,7 @@ npm run dev
 - `storage/` : fichiers générés, sessions, logs
 - `tests/` : tests PHPUnit
 
-### `medtools65-react`
+### `medex65-react`
 
 - `src/api/` : clients API et appels réseau
 - `src/components/` : composants UI et layout
@@ -57,11 +57,11 @@ npm run dev
 ## Démarrage rapide
 
 1. Lance d’abord le backend :
-   - `cd medtools65-api`
+   - `cd medex65-api`
    - `php artisan serve --port=8000`
 
 2. Lance ensuite le frontend :
-   - `cd medtools65-react`
+   - `cd medex65-react`
    - `npm run dev`
 
 3. Ouvre le frontend dans ton navigateur :
@@ -74,5 +74,5 @@ npm run dev
 
 ## Liens utiles
 
-- Backend Laravel : `medtools65-api/README.md`
-- Frontend React : `medtools65-react/README.md`
+- Backend Laravel : `medex65-api/README.md`
+- Frontend React : `medex65-react/README.md`
