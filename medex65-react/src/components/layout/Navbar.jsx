@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useSettings } from '@/hooks/useSettings'
 
 const NAV_LINKS = [
   { label: 'Accueil',      to: '/', hash: 'hero' },
@@ -12,6 +13,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const { get } = useSettings()
+  const logoImg = get('logo_image_url')
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -36,12 +39,14 @@ export default function Navbar() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 no-underline">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-light to-blue-light
-                              flex items-center justify-center text-lg flex-shrink-0">
-                🫀
+                              flex items-center justify-center text-lg flex-shrink-0 overflow-hidden">
+                {logoImg
+                  ? <img src={logoImg} alt={get('site_name', 'Medex65')} className="w-full h-full object-cover" />
+                  : get('logo_emoji', '🫀')}
               </div>
               <div>
-                <span className="font-display font-bold text-white text-lg leading-tight block">Medex65</span>
-                <span className="text-white/50 text-[0.6rem] tracking-widest uppercase">Faites confiance au processus</span>
+                <span className="font-display font-bold text-white text-lg leading-tight block">{get('site_name', 'Medex65')}</span>
+                <span className="text-white/50 text-[0.6rem] tracking-widest uppercase">{get('tagline', 'Faites confiance au processus')}</span>
               </div>
             </Link>
 

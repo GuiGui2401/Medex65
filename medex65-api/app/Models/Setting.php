@@ -27,6 +27,11 @@ class Setting extends Model
         Cache::forget("setting:{$key}");
     }
 
+    public static function clearCache(string $key): void
+    {
+        Cache::forget("setting:{$key}");
+    }
+
     public static function getGroup(string $group): array
     {
         return Cache::remember("settings_group:{$group}", 3600, function () use ($group) {

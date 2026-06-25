@@ -35,6 +35,7 @@ class AdminCategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name'        => 'required|string|max:100|unique:categories,name',
             'icon'        => 'nullable|string|max:10',
+            'image'       => 'nullable|string|max:1000',
             'description' => 'nullable|string|max:500',
             'color'       => 'nullable|string|max:10',
             'sort_order'  => 'nullable|integer|min:0',
@@ -74,6 +75,7 @@ class AdminCategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name'        => "required|string|max:100|unique:categories,name,{$category->id}",
             'icon'        => 'nullable|string|max:10',
+            'image'       => 'nullable|string|max:1000',
             'description' => 'nullable|string|max:500',
             'color'       => 'nullable|string|max:10',
             'active'      => 'nullable|boolean',

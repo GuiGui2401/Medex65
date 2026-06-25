@@ -80,7 +80,7 @@ export default function ProductModal() {
                         transition-colors no-underline flex items-center justify-center gap-2">
             💬 WhatsApp
           </a>
-          <a href={mailLink('info@medex237.com', `Demande d'info : ${product.name}`)}
+          <a href={mailLink('', `Demande d'info : ${product.name}`)}
              className="flex-1 bg-off-white hover:bg-gray-100 text-dark
                         font-semibold text-sm py-3 rounded-xl text-center
                         transition-colors no-underline flex items-center justify-center gap-2

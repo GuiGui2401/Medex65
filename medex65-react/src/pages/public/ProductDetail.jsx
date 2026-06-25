@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchProduct, selectCurrent, selectLoading } from '@/store/slices/productsSlice'
 import Spinner from '@/components/ui/Spinner'
 import { waLink, callLink, mailLink } from '@/utils/contact'
+import { useSettings } from '@/hooks/useSettings'
 
 export default function ProductDetail() {
   const { slug }    = useParams()
@@ -11,6 +12,7 @@ export default function ProductDetail() {
   const product     = useSelector(selectCurrent)
   const loading     = useSelector(selectLoading)
   const [imgIdx, setImgIdx] = useState(0)
+  const { get } = useSettings()
 
   useEffect(() => {
     dispatch(fetchProduct(slug))
@@ -94,7 +96,7 @@ export default function ProductDetail() {
                             flex items-center gap-3">
               <span className="text-2xl">✅</span>
               <div>
-                <div className="text-green font-bold text-sm">Garantie 12 mois constructeur</div>
+                <div className="text-green font-bold text-sm">Garantie {get('guarantee_months', '12')} mois constructeur</div>
                 <div className="text-gray-med text-xs mt-0.5">Installation et formation incluses</div>
               </div>
             </div>
@@ -113,7 +115,7 @@ export default function ProductDetail() {
                                                  no-underline flex items-center justify-center gap-2 text-sm">
                   📞 Appeler
                 </a>
-                <a href={mailLink('info@medex237.com', `Info produit : ${product.name}`)}
+                <a href={mailLink(get('email', 'info@medex237.com'), `Info produit : ${product.name}`)}
                    className="py-3 bg-off-white hover:bg-gray-100 text-dark font-semibold
                               rounded-xl text-center transition-colors no-underline border border-gray-200
                               flex items-center justify-center gap-2 text-sm">

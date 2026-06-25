@@ -54,6 +54,8 @@ class AdminProductController extends Controller
             'active'      => 'nullable|boolean',
             'sort_order'  => 'nullable|integer',
             'images.*'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_urls'  => 'nullable|array',
+            'image_urls.*' => 'nullable|string|max:1000',
             'specs'       => 'nullable|array',
             'specs.*.label' => 'required_with:specs|string|max:100',
             'specs.*.value' => 'required_with:specs|string|max:200',
@@ -63,9 +65,11 @@ class AdminProductController extends Controller
             return response()->json(['message' => 'Données invalides.', 'errors' => $validator->errors()], 422);
         }
 
-        $data         = $validator->validated();
+        $data = $validator->validated();
+        unset($data['image_urls']);
         $data['slug'] = Str::slug($data['name']);
-        $data['images'] = $this->handleImageUploads($request);
+        $urls = array_values(array_filter((array) $request->input('image_urls', []), fn ($u) => filled($u)));
+        $data['images'] = array_merge($urls, $this->handleImageUploads($request));
 
         $product = Product::create($data);
 
@@ -105,6 +109,8 @@ class AdminProductController extends Controller
             'active'      => 'nullable|boolean',
             'sort_order'  => 'nullable|integer',
             'images.*'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_urls'  => 'nullable|array',
+            'image_urls.*' => 'nullable|string|max:1000',
             'specs'       => 'nullable|array',
             'specs.*.label' => 'required_with:specs|string|max:100',
             'specs.*.value' => 'required_with:specs|string|max:200',
@@ -115,11 +121,13 @@ class AdminProductController extends Controller
         }
 
         $data = $validator->validated();
+        unset($data['image_urls']);
         if (isset($data['name'])) $data['slug'] = Str::slug($data['name']);
 
-        $newImages = $this->handleImageUploads($request);
-        if (! empty($newImages)) {
-            $data['images'] = array_merge($product->images ?? [], $newImages);
+        // Le formulaire envoie la liste complète des images (URLs conservées + uploads).
+        if ($request->boolean('manage_images') || $request->hasFile('images')) {
+            $urls = array_values(array_filter((array) $request->input('image_urls', []), fn ($u) => filled($u)));
+            $data['images'] = array_merge($urls, $this->handleImageUploads($request));
         }
 
         $product->update($data);

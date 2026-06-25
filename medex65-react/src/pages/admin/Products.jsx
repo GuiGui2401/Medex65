@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { fetchProducts, createProduct, updateProduct, deleteProduct, selectProducts, selectLoading } from '@/store/slices/productsSlice'
 import { fetchCategories, selectCategories } from '@/store/slices/categoriesSlice'
 import Spinner from '@/components/ui/Spinner'
+import ImageUploader from '@/components/admin/ImageUploader'
 import toast from 'react-hot-toast'
 
 export default function Products() {
@@ -14,6 +15,7 @@ export default function Products() {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing]   = useState(null)
   const [search, setSearch]     = useState('')
+  const [images, setImages]     = useState([])
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
 
@@ -23,20 +25,22 @@ export default function Products() {
     dispatch(fetchCategories())
   }, [dispatch])
 
-  const openCreate = () => { setEditing(null); reset({}); setShowForm(true) }
+  const openCreate = () => { setEditing(null); reset({}); setImages([]); setShowForm(true) }
   const openEdit   = (p)  => {
     setEditing(p)
     reset({
       name: p.name, short_desc: p.short_desc, description: p.description,
       category_id: p.category_id, badge: p.badge || '', featured: p.featured,
-      image_url: p.images?.[0] || '',
     })
+    setImages(p.images || [])
     setShowForm(true)
   }
 
   const onSubmit = async (data) => {
     const fd = new FormData()
     Object.entries(data).forEach(([k, v]) => { if (v !== undefined && v !== '') fd.append(k, v) })
+    fd.append('manage_images', '1')
+    images.forEach((u) => fd.append('image_urls[]', u))
 
     if (editing) {
       const res = await dispatch(updateProduct({ id: editing.id, formData: fd }))
@@ -180,9 +184,8 @@ export default function Products() {
                   {...register('description')} />
               </div>
               <div className="md:col-span-2">
-                <label className="form-label">URL de l'image principale</label>
-                <input className="form-input" placeholder="https://…" type="url"
-                  {...register('image_url')} />
+                <label className="form-label">Images du produit</label>
+                <ImageUploader value={images} onChange={setImages} multiple folder="products" />
               </div>
               <div>
                 <label className="form-label">Badge (optionnel)</label>

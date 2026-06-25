@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminStatsController;
+use App\Http\Controllers\Admin\MediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,10 +60,14 @@ Route::prefix('admin')->middleware(['auth.jwt', 'role:super_admin,editor'])->gro
     Route::post('products/{product}/images', [AdminProductController::class, 'uploadImages']);
     Route::delete('products/{product}/images/{index}', [AdminProductController::class, 'deleteImage']);
 
+    // Téléversement d'images générique (tout admin authentifié)
+    Route::post('uploads', [MediaController::class, 'upload']);
+
     // Paramètres (super_admin seulement)
     Route::middleware('role:super_admin')->group(function () {
-        Route::get('settings',  [AdminSettingController::class, 'index']);
-        Route::put('settings',  [AdminSettingController::class, 'update']);
+        Route::get('settings',         [AdminSettingController::class, 'index']);
+        Route::put('settings',         [AdminSettingController::class, 'update']);
+        Route::post('settings/upload', [AdminSettingController::class, 'upload']);
 
         // Utilisateurs
         Route::apiResource('users', AdminUserController::class);

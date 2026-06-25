@@ -17,9 +17,11 @@ export default function CategoryCard({ category, active, onClick }) {
                       from-blue-dark to-green-light scale-x-0 group-hover:scale-x-100
                       transition-transform duration-300 origin-left" />
 
-      <div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-5"
+      <div className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl mb-5 overflow-hidden"
            style={{ backgroundColor: category.color + '18' }}>
-        {category.icon}
+        {category.image
+          ? <img src={category.image} alt={category.name} className="w-full h-full object-contain p-1.5" />
+          : category.icon}
       </div>
       <h3 className="font-display font-semibold text-dark text-base mb-2">
         {category.name}

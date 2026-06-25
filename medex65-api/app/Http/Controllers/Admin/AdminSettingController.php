@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Support\MediaUploader;
+use App\Support\SiteSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -11,46 +13,62 @@ class AdminSettingController extends Controller
 {
     /**
      * GET /api/admin/settings
+     * Renvoie le schéma (pour générer le formulaire) + les valeurs courantes.
      */
     public function index(): JsonResponse
     {
-        $settings = Setting::all()->groupBy('group')->map(fn ($g) => $g->pluck('value', 'key'));
-
-        return response()->json(['data' => $settings]);
+        return response()->json([
+            'data' => [
+                'schema' => SiteSettings::adminSchema(),
+                'values' => SiteSettings::resolved(),
+            ],
+        ]);
     }
 
     /**
      * PUT /api/admin/settings
+     * Valide dynamiquement selon le registre et enregistre chaque réglage fourni.
      */
     public function update(Request $request): JsonResponse
     {
-        $request->validate([
-            'slogan'   => 'nullable|string|max:200',
-            'phone1'   => 'nullable|string|max:20',
-            'phone2'   => 'nullable|string|max:20',
-            'email'    => 'nullable|email|max:100',
-            'website'  => 'nullable|string|max:100',
-            'address'  => 'nullable|string|max:300',
-            'whatsapp' => 'nullable|string|max:20',
-        ]);
+        $validated = $request->validate(SiteSettings::rules());
 
-        $contactKeys = ['phone1', 'phone2', 'email', 'website', 'address', 'whatsapp'];
-        $generalKeys = ['slogan'];
+        foreach ($validated as $key => $value) {
+            if (! SiteSettings::exists($key) || ! $request->exists($key)) {
+                continue;
+            }
 
-        foreach ($contactKeys as $key) {
-            if ($request->filled($key)) {
-                Setting::set($key, $request->$key, 'contact');
-            }
+            Setting::updateOrCreate(
+                ['key' => $key],
+                [
+                    'value' => SiteSettings::encode($key, $value),
+                    'group' => SiteSettings::groupOf($key),
+                ]
+            );
+            Setting::clearCache($key);
         }
-        foreach ($generalKeys as $key) {
-            if ($request->filled($key)) {
-                Setting::set($key, $request->$key, 'general');
-            }
-        }
+
+        SiteSettings::flushCache();
 
         return response()->json([
             'message' => 'Paramètres mis à jour avec succès.',
-            'data'    => Setting::getGroup('contact') + Setting::getGroup('general'),
+            'data'    => SiteSettings::resolved(),
+        ]);
+    }
+
+    /**
+     * POST /api/admin/settings/upload
+     * Téléverse une image (logo, bannière…) et renvoie son URL publique absolue.
+     */
+    public function upload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:jpeg,png,jpg,webp,svg,gif|max:4096',
+        ]);
+
+        return response()->json([
+            'message' => 'Image téléversée avec succès.',
+            'url'     => MediaUploader::store($request->file('file'), 'settings'),
         ]);
     }
 }

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { fetchCategories, createCategory, updateCategory, deleteCategory, selectCategories } from '@/store/slices/categoriesSlice'
 import { selectProducts } from '@/store/slices/productsSlice'
+import ImageUploader from '@/components/admin/ImageUploader'
 import toast from 'react-hot-toast'
 
 export default function Categories() {
@@ -11,6 +12,7 @@ export default function Categories() {
   const products   = useSelector(selectProducts)
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing]   = useState(null)
+  const [iconImage, setIconImage] = useState('')
   const { register, handleSubmit, reset } = useForm()
 
   useEffect(() => {
@@ -18,17 +20,18 @@ export default function Categories() {
     dispatch(fetchCategories())
   }, [dispatch])
 
-  const openCreate = () => { setEditing(null); reset({}); setShowForm(true) }
-  const openEdit   = (c)  => { setEditing(c); reset({ name: c.name, icon: c.icon, description: c.description }); setShowForm(true) }
+  const openCreate = () => { setEditing(null); reset({}); setIconImage(''); setShowForm(true) }
+  const openEdit   = (c)  => { setEditing(c); reset({ name: c.name, icon: c.icon, description: c.description }); setIconImage(c.image || ''); setShowForm(true) }
 
   const onSubmit = async (data) => {
+    const payload = { ...data, image: iconImage }
     if (editing) {
-      const res = await dispatch(updateCategory({ id: editing.id, data }))
+      const res = await dispatch(updateCategory({ id: editing.id, data: payload }))
       if (!res.error) { toast.success('Catégorie modifiée'); setShowForm(false) }
       else toast.error('Erreur')
     } else {
-      const res = await dispatch(createCategory(data))
-      if (!res.error) { toast.success('Catégorie créée'); setShowForm(false); reset({}) }
+      const res = await dispatch(createCategory(payload))
+      if (!res.error) { toast.success('Catégorie créée'); setShowForm(false); reset({}); setIconImage('') }
       else toast.error('Erreur')
     }
   }
@@ -61,7 +64,11 @@ export default function Categories() {
               const count = products.filter((p) => p.category_id === c.id).length
               return (
                 <tr key={c.id} className="border-t border-gray-100 hover:bg-off-white/50">
-                  <td className="px-5 py-4 text-3xl">{c.icon}</td>
+                  <td className="px-5 py-4 text-3xl">
+                    {c.image
+                      ? <img src={c.image} alt={c.name} className="w-10 h-10 object-contain rounded" />
+                      : c.icon}
+                  </td>
                   <td className="px-5 py-4 font-semibold text-dark text-sm">{c.name}</td>
                   <td className="px-5 py-4 text-gray-med text-sm max-w-xs">{c.description}</td>
                   <td className="px-5 py-4 text-sm font-semibold text-blue-mid">{count}</td>
@@ -106,6 +113,11 @@ export default function Categories() {
                 <label className="form-label">Icône (emoji)</label>
                 <input className="form-input" placeholder="🏥"
                   {...register('icon')} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="form-label">Icône en image (optionnel)</label>
+                <ImageUploader value={iconImage} onChange={setIconImage} folder="categories" />
+                <p className="text-xs text-gray-med mt-1">Si une image est fournie, elle remplace l'emoji sur la boutique.</p>
               </div>
               <div className="md:col-span-2">
                 <label className="form-label">Description</label>
