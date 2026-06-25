@@ -1,0 +1,70 @@
+# Root ignores for both projects
+.DS_Store
+Thumbs.db
+*.log
+*.cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE/editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Laravel / PHP
+medtools65-api/vendor/
+medtools65-api/.env
+medtools65-api/.env.*
+medtools65-api/.phpunit.result.cache
+medtools65-api/.phpunit.result.cache
+medtools65-api/storage/*.key
+medtools65-api/storage/app/public
+medtools65-api/storage/framework/cache/data
+medtools65-api/storage/framework/sessions
+medtools65-api/storage/framework/testing
+medtools65-api/storage/framework/views
+medtools65-api/storage/logs
+medtools65-api/public/storage
+medtools65-api/node_modules/
+medtools65-api/homestead.yaml
+medtools65-api/homestead.json
+medtools65-api/.idea/
+medtools65-api/.vscode/
+
+# React / Node
+medtools65-react/node_modules/
+medtools65-react/dist/
+medtools65-react/.vite/
+medtools65-react/build/
+medtools65-react/.env
+medtools65-react/.env.*
+medtools65-react/npm-debug.log*
+medtools65-react/yarn-debug.log*
+medtools65-react/yarn-error.log*
+medtools65-react/pnpm-debug.log*
+medtools65-react/.idea/
+medtools65-react/.vscode/
+
+# Composer
+medtools65-api/vendor/
+medtools65-api/composer.lock
+
+# PHPUnit
+medtools65-api/phpunit.xml
+
+# Laravel Mix / Vite
+medtools65-api/public/hot
+medtools65-api/public/storage
+
+# Misc
+*.swp
+*.lock
+*.bak
+*~
+
+# Ignore environment files anywhere
+**/.env
+**/.env.*
