@@ -30,7 +30,7 @@ export default function Products() {
     setEditing(p)
     reset({
       name: p.name, short_desc: p.short_desc, description: p.description,
-      category_id: p.category_id, badge: p.badge || '', featured: p.featured,
+      category_id: p.category_id, badge: p.badge || '', featured: p.featured ? '1' : '0',
     })
     setImages(p.images || [])
     setShowForm(true)
@@ -195,8 +195,8 @@ export default function Products() {
               <div>
                 <label className="form-label">Produit mis en avant</label>
                 <select className="form-input" {...register('featured')}>
-                  <option value={false}>Non</option>
-                  <option value={true}>Oui</option>
+                  <option value="0">Non</option>
+                  <option value="1">Oui</option>
                 </select>
               </div>
             </div>

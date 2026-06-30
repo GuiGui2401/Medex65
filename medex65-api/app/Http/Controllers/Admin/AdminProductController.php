@@ -43,6 +43,8 @@ class AdminProductController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $this->normalizeBooleans($request);
+
         $validator = Validator::make($request->all(), [
             'category_id' => 'required|exists:categories,id',
             'name'        => 'required|string|max:200|unique:products,name',
@@ -98,6 +100,8 @@ class AdminProductController extends Controller
      */
     public function update(Request $request, Product $product): JsonResponse
     {
+        $this->normalizeBooleans($request);
+
         $validator = Validator::make($request->all(), [
             'category_id' => 'sometimes|exists:categories,id',
             'name'        => "sometimes|string|max:200|unique:products,name,{$product->id}",
@@ -192,6 +196,21 @@ class AdminProductController extends Controller
     }
 
     // ── Private ───────────────────────────────────────
+
+    /**
+     * Le formulaire (multipart) envoie les selects sous forme de chaînes
+     * "true"/"false" que la règle `boolean` de Laravel rejette. On les
+     * convertit en vrais booléens avant validation.
+     */
+    private function normalizeBooleans(Request $request): void
+    {
+        foreach (['featured', 'active'] as $field) {
+            if ($request->has($field)) {
+                $request->merge([$field => $request->boolean($field)]);
+            }
+        }
+    }
+
     private function handleImageUploads(Request $request): array
     {
         $paths = [];
